@@ -2,7 +2,7 @@ def can_build(env, platform):
     #if platform == "android":
     #    return True
     if platform == "iphone":
-	return True
+        return True
     return False
 
 def configure(env):
@@ -13,5 +13,16 @@ def configure(env):
     #    env.android_add_to_manifest("android/AndroidManifestChunk.xml")
     #    env.android_add_java_dir("android/src/")
     #    env.android_add_res_dir("android/res/")
-    if (env['platform'] == 'iphone'):
-	pass
+    if env['platform'] == "iphone":
+        env.Append(FRAMEWORKPATH=['#modules/GodotFacebook/ios/',
+            '#modules/GodotFacebook/ios/FBSDKCoreKit.framework/Headers',
+            '#modules/GodotFacebook/ios/FBSDKLoginKit.framework/Headers',
+            '#modules/GodotFacebook/ios/FBSDKShareKit.framework/Headers'
+            ])
+        env.Append(CPPPATH=['#core'])
+        env.Append(LINKFLAGS=[
+            '-ObjC',
+            '-framework', 'Accelerate',
+            '-framework', 'FBSDKCoreKit',
+            '-framework', 'FBSDKLoginKit',
+            '-framework', 'FBSDKShareKit'])
