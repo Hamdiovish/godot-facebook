@@ -17,6 +17,7 @@ def configure(env):
         env.Append(FRAMEWORKPATH=['#modules/GodotFacebook/ios/',
             '#modules/GodotFacebook/ios/FBSDKCoreKit.framework/Headers',
             '#modules/GodotFacebook/ios/FBSDKLoginKit.framework/Headers',
+            '#modules/GodotFacebook/ios/FBSDKGamingServicesKit.framework/Headers',
             '#modules/GodotFacebook/ios/FBSDKShareKit.framework/Headers'
             ])
         env.Append(CPPPATH=['#core'])
@@ -25,4 +26,5 @@ def configure(env):
             '-framework', 'Accelerate',
             '-framework', 'FBSDKCoreKit',
             '-framework', 'FBSDKLoginKit',
+            '-framework', 'FBSDKGamingServicesKit',
             '-framework', 'FBSDKShareKit'])
