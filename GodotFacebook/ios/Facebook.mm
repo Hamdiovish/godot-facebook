@@ -20,6 +20,7 @@
 #include <mach/processor_info.h>
 #include <mach/mach_host.h>
 #import <sys/utsname.h>
+#import <FBSDKGamingServicesKit/FBSDKGamingServicesKit.h>
 
 FBSDKLoginManager* loginManager = NULL;
 int GodotFacebook::fbCallbackId = 0;
@@ -394,6 +395,17 @@ Array GodotFacebook::extinfo() {
     return res;
 }
 
+void GodotFacebook::findFriends() {
+  [FBSDKFriendFinderDialog
+   launchFriendFinderDialogWithCompletionHandler:^(BOOL success, NSError * _Nullable error) {
+    if (!success || error) {
+        NSLog(@"Failed to launch Player Finder: %@", error);
+    } else {
+        NSLog(@"Friend Finding Complete");
+    }
+  }];
+}
+
 void GodotFacebook::_bind_methods()
 {
     ClassDB::bind_method(D_METHOD("init"), &GodotFacebook::init);
@@ -412,4 +424,5 @@ void GodotFacebook::_bind_methods()
     ClassDB::bind_method(D_METHOD("log_event_value_params", "event", "value", "params"), &GodotFacebook::logEventValueParams);
     ClassDB::bind_method(D_METHOD("advertising_id"), &GodotFacebook::advertisingID);
     ClassDB::bind_method(D_METHOD("extinfo"), &GodotFacebook::extinfo);
+    ClassDB::bind_method(D_METHOD("findFriends"), &GodotFacebook::findFriends);
 }
