@@ -22,6 +22,9 @@
 #import <sys/utsname.h>
 #import <FBSDKGamingServicesKit/FBSDKGamingServicesKit.h>
 
+#import <UIKit/UIKit.h>
+#import <objc/runtime.h>
+
 FBSDKLoginManager* loginManager = NULL;
 int GodotFacebook::fbCallbackId = 0;
 
@@ -153,7 +156,71 @@ GodotFacebook::~GodotFacebook()
 {
 }
 
+@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@property (nonatomic, strong) UIWindow *window;
+@end
+
+@implementation AppDelegate (zarbia)
+
+- (BOOL)myApplication:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+    NSLog(@"URL ADV:");
+  [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                 openURL:url
+                                                 options:options];
+  return YES;
+}
+
+@end
+
+
+GodotFacebook::GodotFacebook()
+{
+}
+
+GodotFacebook::~GodotFacebook()
+{
+}
+
+/* The following method must be added to the app_delegate.mm in godot source code in order to be replaced with our one
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options
+{
+   NSLog(@">>Old CALLBACK:");
+  return YES;
+}
+*/
+void swizzer(Class target, SEL originalSelector, SEL swizzledSelector) {
+    NSLog(@">>Swizzling:");
+    Method originalMethod = class_getInstanceMethod(target, originalSelector);
+    Method swizzledMethod = class_getInstanceMethod(target, swizzledSelector);
+
+    BOOL didAddMethod =
+   class_addMethod(target,
+                   originalSelector,
+                   method_getImplementation(swizzledMethod),
+                   method_getTypeEncoding(swizzledMethod));
+
+    if (didAddMethod) {
+        NSLog(@">>Swizzling:added");
+        class_replaceMethod(target,
+                            swizzledSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+
+    } else {
+        NSLog(@">>Swizzling:replaced");
+        method_exchangeImplementations(originalMethod, swizzledMethod);
+    }
+}
+
 void GodotFacebook::init(const String& key) {
+    swizzer([AppDelegate class],@selector(application:openURL:options:),@selector(myApplication:openURL:options:));
     [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication] didFinishLaunchingWithOptions:nil];
     loginManager = [[FBSDKLoginManager alloc] init];
     [FBSDKSettings setAppID:[NSString stringWithUTF8String:key.utf8().get_data()]];
