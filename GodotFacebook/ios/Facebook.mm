@@ -234,7 +234,7 @@ int GodotFacebook::getFacebookCallbackId() {
     return fbCallbackId;
 }
 
-void GodotFacebook::gameRequest(const String& message, const String& recipient, const String& objectId) {
+void GodotFacebook::gameRequest(const String& message, const Array& recipients, const String& objectId) {
     
     FBSDKGameRequestDialog *dialog = [[FBSDKGameRequestDialog alloc] init];
     MyGameRequestDialogDelegate *delegate = [[MyGameRequestDialogDelegate alloc] init];
@@ -248,6 +248,15 @@ void GodotFacebook::gameRequest(const String& message, const String& recipient, 
     }
         
     FBSDKGameRequestContent *content = [[FBSDKGameRequestContent alloc] init];
+
+    NSMutableArray *recps = [NSMutableArray new];
+      for(int i=0; i<recipients.size(); i++) {
+          Variant p = recipients[i];
+          if(p.get_type() == Variant::STRING) {
+              [recps addObject:[NSString stringWithUTF8String:((String)p).utf8().get_data()]];
+          }
+    }
+
         
     //content.filters = FBSDKGameRequestFilterNone;
     //content.filters = FBSDKGameRequestFilterAppUsers;
@@ -256,7 +265,7 @@ void GodotFacebook::gameRequest(const String& message, const String& recipient, 
     //content.data = params[@"data"];
     content.message = [NSString stringWithUTF8String:message.utf8().get_data()];
     content.objectID = [NSString stringWithUTF8String:objectId.utf8().get_data()];
-    content.recipients = @[ [NSString stringWithUTF8String:recipient.utf8().get_data()] ];
+    content.recipients = recps;
     //content.title = params[@"title"];
         
     dialog.content = content;
