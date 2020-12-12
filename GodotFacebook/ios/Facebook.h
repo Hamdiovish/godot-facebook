@@ -23,7 +23,7 @@ public:
     void init(const String& key);
     void setFacebookCallbackId(int facebookcallbackId);
     int  getFacebookCallbackId();
-    void gameRequest(const String& message, const String& recipient, const String& objectId);
+    void gameRequest(const String& message, const Array& recipients, const String& objectId);
     void login(const Array& permissions);
     void logout();
     bool isLoggedIn();
